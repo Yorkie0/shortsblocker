@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shorts Blocker settings</title>
+    <link rel="icon" href="icons/icon32.png" />
+    <link rel="stylesheet" href="ui.css" />
+    <style>
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+      .brand img {
+        width: 48px;
+        height: 48px;
+      }
+      .brand h1 {
+        font-size: 22px;
+      }
+      .toggles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 32px 0;
+      }
+      section {
+        margin-bottom: 28px;
+      }
+      h2 {
+        margin: 0 0 4px;
+        font-size: 15px;
+      }
+      section > p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        padding: 12px 14px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, monospace;
+        resize: vertical;
+      }
+      textarea:focus,
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #4a4a54;
+      }
+      .columns {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        gap: 20px;
+      }
+      #tester-result {
+        margin-top: 8px;
+        min-height: 20px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      #tester-result.blocked {
+        color: var(--red);
+      }
+      #tester-result.clear {
+        color: var(--green);
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      #status {
+        margin-left: 6px;
+        font-size: 13px;
+        color: var(--green);
+      }
+      code {
+        font-size: 12px;
+        padding: 1px 5px;
+        background: var(--surface);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand">
+        <img src="icons/icon128.png" alt="" />
+        <div>
+          <h1>Shorts Blocker</h1>
+          <span>Settings</span>
+        </div>
+      </div>
+
+      <div class="toggles">
+        <label class="toggle">
+          <div>
+            <strong>Block Shorts</strong>
+            <small>Hide Shorts and open Shorts links as normal videos</small>
+          </div>
+          <input type="checkbox" class="switch" id="blockShorts" />
+        </label>
+        <label class="toggle">
+          <div>
+            <strong>GTA 6 spoiler shield</strong>
+            <small>Hide matching videos, posts &amp; comments</small>
+          </div>
+          <input type="checkbox" class="switch" id="spoilerShield" />
+        </label>
+      </div>
+
+      <div class="columns">
+        <section>
+          <h2>Blocked words</h2>
+          <p>
+            One per line, any capitalisation. Spaces also match dashes or nothing, so
+            <code>gta 6</code> catches <code>GTA6</code> and <code>#gta-6</code>.
+          </p>
+          <textarea id="keywords" rows="16" spellcheck="false"></textarea>
+        </section>
+        <section>
+          <h2>Allowed channels</h2>
+          <p>
+            Videos from these channels are never hidden. Use the <code>@handle</code> or the
+            <code>UC…</code> channel ID.
+          </p>
+          <textarea id="allowedChannels" rows="6" spellcheck="false"></textarea>
+        </section>
+      </div>
+
+      <section>
+        <h2>Test a title</h2>
+        <p>Type a video title to check whether the filter would hide it.</p>
+        <input type="text" id="tester" placeholder="e.g. GTA VI map LEAKED?!" />
+        <div id="tester-result"></div>
+      </section>
+
+      <div class="actions">
+        <button class="primary" id="save">Save</button>
+        <button id="reset">Restore defaults</button>
+        <span id="status"></span>
+      </div>
+    </main>
+
+    <script src="shared.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
