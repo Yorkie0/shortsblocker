@@ -23,9 +23,17 @@
 - Videos from **@RockstarGames** are let through, so you still get the official trailers
 - The toolbar badge shows how many items were hidden on the current tab
 
-Default blocked words: `gta 6`, `gta vi`, `grand theft auto 6`, `grand theft auto vi`, `gta leak(s)`, `rockstar leak(s)`, `cyberleek`, `vice city`, `leonida`, `lucia caminos`, `jason duval`, `port gellhorn`.
+Default blocked words: `gta 6`, `gta vi`, `grand theft auto 6`, `grand theft auto vi`, `gta leak`, `rockstar leak`, `cyber leek`, `cyber leak`, `vice city`, `leonida`, `lucia caminos`, `jason duval`, `port gellhorn`.
 
-Matching ignores case, and spaces in a word also match dashes or nothing, so `gta 6` catches `GTA6`, `#gta6`, and `gta-6`. Only whole words match, so `gta vi` doesn't hide "GTA Vice City" and `gta 6` doesn't hide "GTA 60fps".
+How matching works:
+
+- Case is ignored.
+- Spaces in a word also match dashes, underscores, or nothing, so `cyber leek` catches `CyberLeek`, `cyber-leek`, and `#cyberleek`.
+- A trailing `s` or `'s` is allowed, so `gta leak` catches "GTA leaks" and `cyber leek` catches "CyberLeek's".
+- Fancy Unicode text (`𝗚𝗧𝗔 𝟲`, `ＧＴＡ６`) and invisible zero-width characters are normalized before matching.
+- Otherwise only whole words match, so `gta vi` doesn't hide "GTA Vice City" and `gta 6` doesn't hide "GTA 60fps".
+
+When an update adds new default words, they're appended to your saved list, so you get them even if you've edited your own.
 
 ## Install
 

@@ -72,6 +72,7 @@
     "ytd-backstage-post-thread-renderer",
     "ytd-post-renderer",
     "ytd-universal-watch-card-renderer",
+    "ytd-search-refinement-card-renderer",
     "yt-lockup-view-model",
     "ytm-shorts-lockup-view-model",
     "ytm-shorts-lockup-view-model-v2",
@@ -83,8 +84,9 @@
     ".ytp-videowall-still",
     ".ytp-ce-element",
     ".ytp-autonav-endscreen-upnext-container",
-    // Search box suggestions
-    '[role="listbox"] [role="option"]',
+    // Search box suggestions (YouTube doesn't always wrap them in a listbox)
+    '[role="option"]',
+    ".ytSuggestionComponentSuggestion",
   ].join(",");
 
   // Comments are checked one by one and never exempted: an @RockstarGames
@@ -137,10 +139,10 @@
     const active = settings.spoilerShield && matcher;
     for (const el of document.querySelectorAll(TILE_SELECTOR)) {
       if (el.parentElement?.closest(TILE_SELECTOR)) continue;
-      setHidden(el, active && matcher.test(textOf(el)) && !isFromAllowedChannel(el));
+      setHidden(el, active && matcher.test(sbNormalizeText(textOf(el))) && !isFromAllowedChannel(el));
     }
     for (const el of document.querySelectorAll(COMMENT_SELECTOR)) {
-      setHidden(el, active && matcher.test(el.textContent));
+      setHidden(el, active && matcher.test(sbNormalizeText(el.textContent)));
     }
     // Clear stale flags (e.g. elements that stopped matching a selector).
     if (!active) {
@@ -224,7 +226,7 @@
       matcher &&
       videoId &&
       !dismissed.has(videoId) &&
-      matcher.test(watchPageText()) &&
+      matcher.test(sbNormalizeText(watchPageText())) &&
       !(owner && isFromAllowedChannel(owner));
     if (isSpoiler) showOverlay(videoId);
     else hideOverlay();

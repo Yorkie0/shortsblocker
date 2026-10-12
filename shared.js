@@ -9,10 +9,9 @@ const SB_DEFAULTS = {
     "grand theft auto 6",
     "grand theft auto vi",
     "gta leak",
-    "gta leaks",
     "rockstar leak",
-    "rockstar leaks",
-    "cyberleek",
+    "cyber leek",
+    "cyber leak",
     "vice city",
     "leonida",
     "lucia caminos",
@@ -21,6 +20,13 @@ const SB_DEFAULTS = {
   ],
   // Channel handles (@name) or channel IDs (UC...) whose videos are never hidden.
   allowedChannels: ["@RockstarGames"],
+};
+
+// Keywords added to the defaults in each release. Saved keyword lists replace
+// the defaults, so on update these get appended to them (only once, so words
+// the user removed on purpose stay removed).
+const SB_KEYWORD_ADDITIONS = {
+  "1.2.0": ["cyber leek", "cyber leak"],
 };
 
 function sbGetSettings() {
@@ -32,16 +38,35 @@ function sbEscapeRegExp(s) {
 }
 
 // Builds one case-insensitive regex from the keyword list. Spaces in a keyword
-// match any run of spaces/dashes/dots/underscores (or nothing), so "gta 6"
-// also catches "GTA6", "gta-6", and "#GTA6". Keywords only match whole words,
-// so "gta vi" does not fire on "GTA Vice City".
+// match any run of spaces/dashes/dots/underscores (or nothing), so "cyber leek"
+// also catches "CyberLeek", "cyber-leek", and "#cyberleek". A trailing "s" or
+// "'s" is allowed ("leaks", "CyberLeek's"). Otherwise keywords only match whole
+// words, so "gta vi" does not fire on "GTA Vice City".
 function sbBuildMatcher(keywords) {
   const parts = keywords
     .map((k) => k.trim().toLowerCase())
     .filter(Boolean)
     .map((k) => k.split(/\s+/).map(sbEscapeRegExp).join("[\\s\\-_.:]*"));
   if (!parts.length) return null;
-  return new RegExp(`(?<![\\p{L}\\p{N}])(?:${parts.join("|")})(?![\\p{L}\\p{N}])`, "iu");
+  return new RegExp(
+    `(?<![\\p{L}\\p{N}])(?:${parts.join("|")})(?:['’]?s)?(?![\\p{L}\\p{N}])`,
+    "iu"
+  );
+}
+
+// Undo common filter dodges before matching: fancy Unicode letters
+// ("𝗚𝗧𝗔 𝟲", full-width "ＧＴＡ６") and invisible zero-width characters.
+function sbNormalizeText(text) {
+  return text.normalize("NFKC").replace(/[­​-‏⁠﻿]/g, "");
+}
+
+function sbVersionLessThan(a, b) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) < (pb[i] || 0);
+  }
+  return false;
 }
 
 function sbNormalizeChannel(s) {

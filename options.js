@@ -22,7 +22,7 @@ function updateTester() {
     result.className = "";
     return;
   }
-  const match = sbBuildMatcher(readList("keywords"))?.exec(title);
+  const match = sbBuildMatcher(readList("keywords"))?.exec(sbNormalizeText(title));
   result.textContent = match ? `Hidden: matches "${match[0]}"` : "Not hidden";
   result.className = match ? "blocked" : "clear";
 }

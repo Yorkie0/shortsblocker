@@ -8,7 +8,26 @@ async function syncShortsRedirect() {
   );
 }
 
-chrome.runtime.onInstalled.addListener(syncShortsRedirect);
+// A saved keyword list replaces the defaults entirely, so new default keywords
+// wouldn't reach anyone who has clicked Save. Append the ones added since the
+// version they're upgrading from.
+async function addNewDefaultKeywords(previousVersion) {
+  const { keywords } = await chrome.storage.sync.get("keywords");
+  if (!keywords) return; // Still on the defaults, which already include them.
+  const have = new Set(keywords.map((k) => k.trim().toLowerCase()));
+  const added = Object.entries(SB_KEYWORD_ADDITIONS)
+    .filter(([version]) => sbVersionLessThan(previousVersion, version))
+    .flatMap(([, words]) => words)
+    .filter((word) => !have.has(word));
+  if (added.length) await chrome.storage.sync.set({ keywords: [...keywords, ...added] });
+}
+
+chrome.runtime.onInstalled.addListener((details) => {
+  syncShortsRedirect();
+  if (details.reason === "update" && details.previousVersion) {
+    addNewDefaultKeywords(details.previousVersion);
+  }
+});
 chrome.runtime.onStartup.addListener(syncShortsRedirect);
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "sync" && "blockShorts" in changes) syncShortsRedirect();
